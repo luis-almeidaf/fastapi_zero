@@ -17,7 +17,7 @@ def test_root_deve_retornar_html_com_ola_mundo(client):
     assert "<h1> Olá Mundo </h1>" in response.text
 
 
-def test_create_user(client):
+def test_create_user_deve_criar_usuario(client):
     response = client.post(
         "/users/",
         json={
@@ -35,19 +35,21 @@ def test_create_user(client):
     }
 
 
-def test_read_users(client: TestClient):
+def test_get_users_deve_retornar_usuarios(client: TestClient):
     response = client.get("/users/")
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
-        "users": [{
-            "username": "luis",
-            "email": "luis@email.com",
-            "id": 1,
-        }]
+        "users": [
+            {
+                "username": "luis",
+                "email": "luis@email.com",
+                "id": 1,
+            }
+        ]
     }
 
 
-def test_read_user(client: TestClient):
+def test_get_user_deve_retornar_usuario(client: TestClient):
     response = client.get("/users/1")
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {
@@ -57,14 +59,14 @@ def test_read_user(client: TestClient):
     }
 
 
-def test_read_user_not_found(client):
+def test_get_user_deve_retornar_user_not_found(client):
     response = client.get("/users/2")
 
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json() == {"detail": "User not found"}
 
 
-def test_update_user(client):
+def test_update_user_deve_atualizar_usuario(client):
     response = client.put(
         "users/1",
         json={
@@ -82,7 +84,7 @@ def test_update_user(client):
     }
 
 
-def test_update_user_not_found(client):
+def test_update_user_deve_retornar_user_not_found(client):
     response = client.put(
         "users/2",
         json={
@@ -96,7 +98,7 @@ def test_update_user_not_found(client):
     assert response.json() == {"detail": "User not found"}
 
 
-def test_delete_user(client):
+def test_delete_user_deve_deletar_usuario(client):
     response = client.delete("users/1")
 
     assert response.status_code == HTTPStatus.OK
@@ -107,7 +109,7 @@ def test_delete_user(client):
     }
 
 
-def test_delete_user_not_found(client):
+def test_delete_user_deve_retornar_user_not_found(client):
     response = client.delete("users/2")
 
     assert response.status_code == HTTPStatus.NOT_FOUND
