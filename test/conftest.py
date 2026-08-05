@@ -5,19 +5,43 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import Session
+from sqlalchemy.pool import StaticPool
 
 from src.app import app
-from src.models import table_registry
+from src.database import get_session
+from src.models import User, table_registry
 
 
 @pytest.fixture
-def client():
-    return TestClient(app)
+def client(session):
+
+    def get_session_override():
+        return session
+
+    with TestClient(app) as client:
+        app.dependency_overrides[get_session] = get_session_override
+        yield client
+
+    app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def user(session: Session):
+    user = User(username="Teste", email="test@email.com", password="testtest")
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+
+    return user
 
 
 @pytest.fixture
 def session():
-    engine = create_engine("sqlite:///memory:")
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
     table_registry.metadata.create_all(engine)
 
     with Session(engine) as session:
