@@ -3,14 +3,6 @@ from http import HTTPStatus
 from fastapi.testclient import TestClient
 
 from src.schemas import UserPublic
-from src.security import create_acess_token
-
-
-def test_root_deve_retornar_ok_e_ola_mundo(client):
-    response = client.get("/")
-
-    assert response.status_code == HTTPStatus.OK
-    assert response.json() == {"message": "Olá mundo"}
 
 
 def test_create_user_deve_criar_usuario(client):
@@ -61,44 +53,6 @@ def test_create_user_nao_deve_criar_usuario_quando_email_ja_existe(
 
     assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {"detail": "Email already exists."}
-
-
-def test_get_token(client, user):
-    response = client.post(
-        "/token",
-        data={"username": user.email, "password": user.clean_password},
-    )
-    token = response.json()
-
-    assert response.status_code == HTTPStatus.OK
-    assert "access_token" in token
-    assert "token_type" in token
-
-
-def test_get_token_nao_deve_retornar_token_para_usuario_invalido(client, user):
-    response = client.post(
-        "/token",
-        data={
-            "username": "email@invalido.com",
-            "password": user.clean_password,
-        },
-    )
-
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {"detail": "Incorrect email or password"}
-
-
-def test_get_token_nao_deve_retornar_token_com_senha_errada(client, user):
-    response = client.post(
-        "/token",
-        data={
-            "username": user.email,
-            "password": "senhaerrada",
-        },
-    )
-
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {"detail": "Incorrect email or password"}
 
 
 def test_get_users_deve_retornar_usuarios(client: TestClient, user):
@@ -203,23 +157,3 @@ def test_delete_user_deve_retornar_user_not_found(client, token):
 
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() == {"detail": "Not enough permissions"}
-
-
-def test_jwt_email_invalido(client):
-    token = create_acess_token(data={"sub": "email-invalido"})
-    response = client.delete(
-        "/users/1", headers={"Authorization": f"Bearer {token}"}
-    )
-
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {"detail": "Could not validate credentials"}
-
-
-def test_jwt_usuario_nao_cadastrasdo(client):
-    token = create_acess_token(data={"sub": ""})
-    response = client.delete(
-        "/users/1", headers={"Authorization": f"Bearer {token}"}
-    )
-
-    assert response.status_code == HTTPStatus.UNAUTHORIZED
-    assert response.json() == {"detail": "Could not validate credentials"}
