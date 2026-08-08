@@ -55,6 +55,12 @@ def test_create_user_nao_deve_criar_usuario_quando_email_ja_existe(
     assert response.json() == {"detail": "Email already exists."}
 
 
+def test_get_users(client):
+    response = client.get("/users")
+    assert response.status_code == HTTPStatus.OK
+    assert response.json() == {"users": []}
+
+
 def test_get_users_deve_retornar_usuarios(client: TestClient, user):
     user_schema = UserPublic.model_validate(user).model_dump()
     response = client.get("/users/")
