@@ -104,9 +104,9 @@ def test_update_user_deve_atualizar_usuario(client, user, token):
     }
 
 
-def test_update_user_deve_retornar_user_not_found(client, token):
+def test_update_user_com_usuario_errado(client, other_user, token):
     response = client.put(
-        "users/2",
+        f"users/{other_user.id}",
         headers={"Authorization": f"Bearer {token}"},
         json={
             "username": "luis1",
@@ -155,9 +155,9 @@ def test_delete_user_deve_deletar_usuario(client, user, token):
     assert response.json() == {"message": "User deleted"}
 
 
-def test_delete_user_deve_retornar_user_not_found(client, token):
+def test_delete_user_com_usuario_errado(client, other_user, token):
     response = client.delete(
-        "users/2",
+        f"users/{other_user.id}",
         headers={"Authorization": f"Bearer {token}"},
     )
 

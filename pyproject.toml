@@ -46,6 +46,8 @@ post_test = 'coverage html'
 
 [dependency-groups]
 dev = [
+    "factory-boy>=3.3.3",
+    "freezegun>=1.5.5",
     "pytest-asyncio>=1.4.0",
     "pytest-random-order>=1.2.0",
 ]
