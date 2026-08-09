@@ -119,21 +119,12 @@ def test_update_user_com_usuario_errado(client, other_user, token):
     assert response.json() == {"detail": "Not enough permissions"}
 
 
-def test_update_user_deve_retornar_integrity_error(client, user, token):
-    client.post(
-        "/users",
-        json={
-            "username": "usuario1",
-            "email": "usuario1@email.com",
-            "password": "senha",
-        },
-    )
-
+def test_update_integrity_error(client, user, other_user, token):
     response_update = client.put(
         f"/users/{user.id}",
         headers={"Authorization": f"Bearer {token}"},
         json={
-            "username": "usuario1",
+            "username": other_user.username,
             "email": "usuario2@email.com",
             "password": "senha2",
         },
