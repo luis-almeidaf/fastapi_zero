@@ -1,4 +1,8 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+from src.models import TodoState
 
 
 class Message(BaseModel):
@@ -30,3 +34,31 @@ class Token(BaseModel):
 class FilterPage(BaseModel):
     offset: int = Field(default=0, ge=0)  # padrão 0, não pode ser negativo
     limit: int = Field(default=10, ge=1)  # padrão 10, minimo menos 1
+
+
+class TodoSchema(BaseModel):
+    title: str
+    description: str
+    state: TodoState
+
+
+class TodoPublic(TodoSchema):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+
+class TodoList(BaseModel):
+    todos: list[TodoPublic]
+
+
+class TodoUpdate(BaseModel):
+    title: str
+    description: str | None = None
+    state: TodoState | None = None
+
+
+class FilterTodo(FilterPage):
+    title: str | None = Field(None, min_length=3, max_length=20)
+    description: str | None = Field(None, min_length=3, max_length=20)
+    state: TodoState | None = None

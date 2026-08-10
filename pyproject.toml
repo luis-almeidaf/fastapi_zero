@@ -26,9 +26,19 @@ extend-exclude = ['migrations']
 preview = true
 select = ['I', 'F', 'E', 'W', 'PL', 'PT', 'FAST']
 
+[tool.typos.default]
+extend-ignore-identifiers-re = ["selectin"]
+
 [tool.pytest]
 pythonpath = ['.']
-addopts = ['-p', 'no:warnings', '--cov=fast_zero', '--cov-context=test', '--cov-branch', '--random-order']
+addopts = [
+    '-p',
+    'no:warnings',
+    '--cov=fast_zero',
+    '--cov-context=test',
+    '--cov-branch',
+    '--random-order',
+]
 asyncio_default_fixture_loop_scope = 'function'
 
 [tool.coverage.run]
@@ -50,4 +60,5 @@ dev = [
     "freezegun>=1.5.5",
     "pytest-asyncio>=1.4.0",
     "pytest-random-order>=1.2.0",
+    "typos>=1.49.0",
 ]
