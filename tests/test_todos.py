@@ -8,7 +8,6 @@ from src.models import Todo, TodoState
 
 
 class TodoFactory(factory.Factory):
-
     class Meta:
         model = Todo
 
@@ -43,7 +42,8 @@ def test_create_todo(client, token, mock_db_time):
 
 @pytest.mark.asyncio
 async def test_list_todos_should_return_all_expected_fields(
-        session: AsyncSession, client, user, token, mock_db_time):
+    session: AsyncSession, client, user, token, mock_db_time
+):
     with mock_db_time(model=Todo) as time:
         todo = TodoFactory(user_id=user.id)
         session.add(todo)
@@ -51,34 +51,40 @@ async def test_list_todos_should_return_all_expected_fields(
 
     await session.refresh(todo)
 
-    response = client.get("/todos",
-                          headers={"Authorization": f"Bearer {token}"})
+    response = client.get(
+        "/todos", headers={"Authorization": f"Bearer {token}"}
+    )
 
-    assert response.json()["todos"] == [{
-        "id": todo.id,
-        "title": todo.title,
-        "description": todo.description,
-        "state": todo.state,
-        "created_at": time.isoformat(),
-        "updated_at": time.isoformat(),
-    }]
+    assert response.json()["todos"] == [
+        {
+            "id": todo.id,
+            "title": todo.title,
+            "description": todo.description,
+            "state": todo.state,
+            "created_at": time.isoformat(),
+            "updated_at": time.isoformat(),
+        }
+    ]
 
 
 @pytest.mark.asyncio
-async def test_list_todos_should_return_5_todos(session: AsyncSession, client,
-                                                user, token):
+async def test_list_todos_should_return_5_todos(
+    session: AsyncSession, client, user, token
+):
     expected_todos = 5
     session.add_all(TodoFactory.create_batch(5, user_id=user.id))
 
-    response = client.get("/todos",
-                          headers={"Authorization": f"Bearer {token}"})
+    response = client.get(
+        "/todos", headers={"Authorization": f"Bearer {token}"}
+    )
 
     assert len(response.json()["todos"]) == expected_todos
 
 
 @pytest.mark.asyncio
 async def test_list_todos_pagination_should_return_2_todos(
-        session: AsyncSession, client, user, token):
+    session: AsyncSession, client, user, token
+):
     expected_todos = 2
     session.add_all(TodoFactory.create_batch(5, user_id=user.id))
 
@@ -92,10 +98,12 @@ async def test_list_todos_pagination_should_return_2_todos(
 
 @pytest.mark.asyncio
 async def test_list_todos_filter_title_should_return_5_todos(
-        session: AsyncSession, client, user, token):
+    session: AsyncSession, client, user, token
+):
     expected_todos = 5
     session.add_all(
-        TodoFactory.create_batch(5, user_id=user.id, title="Test todo 1"))
+        TodoFactory.create_batch(5, user_id=user.id, title="Test todo 1")
+    )
 
     response = client.get(
         "/todos/?title=Test todo 1",
@@ -107,11 +115,12 @@ async def test_list_todos_filter_title_should_return_5_todos(
 
 @pytest.mark.asyncio
 async def test_list_todos_filter_description_should_return_5_todos(
-        session: AsyncSession, client, user, token):
+    session: AsyncSession, client, user, token
+):
     expected_todos = 5
     session.add_all(
-        TodoFactory.create_batch(5, user_id=user.id,
-                                 description="description"))
+        TodoFactory.create_batch(5, user_id=user.id, description="description")
+    )
 
     response = client.get(
         "/todos/?description=description",
@@ -123,10 +132,12 @@ async def test_list_todos_filter_description_should_return_5_todos(
 
 @pytest.mark.asyncio
 async def test_list_todos_filter_state_should_return_5_todos(
-        session: AsyncSession, client, user, token):
+    session: AsyncSession, client, user, token
+):
     expected_todos = 5
     session.add_all(
-        TodoFactory.create_batch(5, user_id=user.id, state=TodoState.draft))
+        TodoFactory.create_batch(5, user_id=user.id, state=TodoState.draft)
+    )
 
     response = client.get(
         "/todos/?state=draft",
@@ -138,7 +149,8 @@ async def test_list_todos_filter_state_should_return_5_todos(
 
 @pytest.mark.asyncio
 async def test_list_todos_filter_combined_should_return_5_todos(
-        session: AsyncSession, client, user, token):
+    session: AsyncSession, client, user, token
+):
     expected_todos = 5
     session.add_all(
         TodoFactory.create_batch(
@@ -147,7 +159,8 @@ async def test_list_todos_filter_combined_should_return_5_todos(
             title="Test todo combined",
             description="combined description",
             state=TodoState.done,
-        ))
+        )
+    )
     session.add_all(
         TodoFactory.create_batch(
             3,
@@ -155,7 +168,8 @@ async def test_list_todos_filter_combined_should_return_5_todos(
             title="Other title",
             description="other description",
             state=TodoState.todo,
-        ))
+        )
+    )
 
     await session.commit()
 
@@ -169,7 +183,7 @@ async def test_list_todos_filter_combined_should_return_5_todos(
 
 @pytest.mark.asyncio
 async def test_list_todos_filter_min_length(client, token):
-    search = 'a'
+    search = "a"
     response = client.get(
         f"/todos/?title={search}",
         headers={"Authorization": f"Bearer {token}"},
@@ -180,7 +194,7 @@ async def test_list_todos_filter_min_length(client, token):
 
 @pytest.mark.asyncio
 async def test_list_todos_filter_max_length(client, token):
-    search = 'a' * 21
+    search = "a" * 21
     response = client.get(
         f"/todos/?title={search}",
         headers={"Authorization": f"Bearer {token}"},

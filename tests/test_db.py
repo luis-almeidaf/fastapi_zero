@@ -2,6 +2,7 @@ from dataclasses import asdict
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import DataError
 from sqlalchemy.orm import Session
 
 from src.models import Todo, User
@@ -10,9 +11,9 @@ from src.models import Todo, User
 @pytest.mark.asyncio
 async def test_create_user(session: Session, mock_db_time):
     with mock_db_time(model=User) as time:
-        new_user = User(username="Luis",
-                        password="senha",
-                        email="luis@email.com")
+        new_user = User(
+            username="Luis", password="senha", email="luis@email.com"
+        )
         session.add(new_user)
         await session.commit()
 
@@ -83,7 +84,6 @@ async def test_create_todo_error(session, user: User):
     )
 
     session.add(todo)
-    await session.commit()
 
-    with pytest.raises(LookupError):
-        await session.scalar(select(Todo))
+    with pytest.raises(DataError):
+        await session.commit()

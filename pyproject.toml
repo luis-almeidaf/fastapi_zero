@@ -8,6 +8,7 @@ dependencies = [
     "aiosqlite>=0.22.1",
     "alembic>=1.18.5",
     "fastapi[standard]>=0.141.1",
+    "psycopg[binary]>=3.3.4",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings>=2.14.2",
     "pyjwt>=2.13.0",
@@ -60,5 +61,6 @@ dev = [
     "freezegun>=1.5.5",
     "pytest-asyncio>=1.4.0",
     "pytest-random-order>=1.2.0",
+    "testcontainers>=4.15.0",
     "typos>=1.49.0",
 ]
