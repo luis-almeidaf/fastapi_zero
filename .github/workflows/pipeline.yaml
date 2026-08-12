@@ -6,6 +6,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Copia os arquivos do repositório
+        uses: actions/checkout@v5
+
+
       - name: Instalar o python
         uses: actions/setup-python@v6
         with:
